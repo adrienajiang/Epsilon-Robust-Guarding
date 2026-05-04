@@ -7,6 +7,7 @@ public class VisibilityChecker {
         Point b = polygon.get(j);
         int n = polygon.size();
 
+        // 1. Check edge intersections (already correct)
         for (int k = 0; k < n; k++) {
             int next = (k + 1) % n;
 
@@ -22,7 +23,34 @@ public class VisibilityChecker {
             }
         }
 
+        // 2. NEW: Check midpoint is inside polygon
+        Point mid = new Point((a.x + b.x) / 2.0, (a.y + b.y) / 2.0);
+
+        if (!isPointInsidePolygon(polygon, mid)) {
+            return false;
+        }
+
         return true;
+    }
+
+    private static boolean isPointInsidePolygon(Polygon polygon, Point p) {
+        int count = 0;
+        int n = polygon.size();
+
+        Point extreme = new Point(1e9, p.y);
+
+        for (int i = 0; i < n; i++) {
+            int next = (i + 1) % n;
+
+            Point a = polygon.get(i);
+            Point b = polygon.get(next);
+
+            if (GeometryUtils.segmentsIntersect(p, extreme, a, b)) {
+                count++;
+            }
+        }
+
+        return (count % 2 == 1);
     }
 
     public static boolean epsilonRobustCanSee(Polygon polygon, int i, int j, double epsilon) {

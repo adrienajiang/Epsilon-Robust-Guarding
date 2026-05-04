@@ -10,7 +10,19 @@ public class WitnessSolver {
             boolean independent = true;
 
             for (int existingWitness : witnesses) {
-                if (canBeSeenBySameGuard(polygon, candidate, existingWitness, epsilon)) {
+
+                // If the two witness vertices can see each other,
+                // then one of them can guard both, so they are NOT independent.
+                if (VisibilityChecker.epsilonRobustCanSee(polygon, candidate, existingWitness, epsilon) ||
+                    VisibilityChecker.epsilonRobustCanSee(polygon, existingWitness, candidate, epsilon)) {
+                    independent = false;
+                    break;
+                }
+
+                // More general rule:
+                // If ANY vertex guard can see both witnesses,
+                // then they are NOT independent.
+                if (canSameGuardSeeBoth(polygon, candidate, existingWitness, epsilon)) {
                     independent = false;
                     break;
                 }
@@ -24,7 +36,7 @@ public class WitnessSolver {
         return witnesses;
     }
 
-    private static boolean canBeSeenBySameGuard(
+    private static boolean canSameGuardSeeBoth(
             Polygon polygon,
             int witnessA,
             int witnessB,
@@ -33,13 +45,8 @@ public class WitnessSolver {
         int n = polygon.size();
 
         for (int guard = 0; guard < n; guard++) {
-            boolean seesA = VisibilityChecker.epsilonRobustCanSee(
-                    polygon, guard, witnessA, epsilon
-            );
-
-            boolean seesB = VisibilityChecker.epsilonRobustCanSee(
-                    polygon, guard, witnessB, epsilon
-            );
+            boolean seesA = VisibilityChecker.epsilonRobustCanSee(polygon, guard, witnessA, epsilon);
+            boolean seesB = VisibilityChecker.epsilonRobustCanSee(polygon, guard, witnessB, epsilon);
 
             if (seesA && seesB) {
                 return true;

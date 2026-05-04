@@ -153,11 +153,18 @@ public class GuardingGUI extends JFrame {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setFocusPainted(false);
+
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBorderPainted(false);
+
         button.setBackground(new Color(70, 110, 255));
         button.setForeground(Color.WHITE);
+
         button.setBorder(new EmptyBorder(10, 14, 10, 14));
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+
         return button;
     }
 

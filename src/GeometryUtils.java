@@ -39,13 +39,13 @@ public class GeometryUtils {
         double dy = b.y - a.y;
 
         if (dx == 0 && dy == 0) {
-            return p.distanceTo(a);
+            return p.euclideanDistance(a);
         }
 
         double t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy);
         t = Math.max(0, Math.min(1, t));
 
         Point projection = new Point(a.x + t * dx, a.y + t * dy);
-        return p.distanceTo(projection);
+        return p.euclideanDistance(projection);
     }
 }

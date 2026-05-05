@@ -6,39 +6,51 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+// Main GUI Window Class
 public class GuardingGUI extends JFrame {
+
+    // Drawing Area.
     private final DrawingPanel drawingPanel = new DrawingPanel();
 
+    // Constructor to set up the GUI components and layout.
     public GuardingGUI() {
+
+        // Set up title, size, close operation and layout split window.
         setTitle("ε-Robust Guarding");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Top Bar.
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(245, 247, 250));
         topBar.setBorder(new EmptyBorder(12, 18, 12, 18));
 
+        // Title.
         JLabel title = new JLabel("ε-Robust Guarding of Simple Polygons");
         title.setFont(new Font("Segoe UI", Font.BOLD, 22));
         title.setForeground(new Color(35, 45, 65));
 
+        // Subtitle.
         JLabel subtitle = new JLabel("Click vertices in order, then toggle guards/witnesses/visibility.");
         subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         subtitle.setForeground(new Color(90, 100, 120));
 
+        // Combine title and subtitle in a vertical box and add to top bar.
         JPanel titleBox = new JPanel(new GridLayout(2, 1));
         titleBox.setOpaque(false);
         titleBox.add(title);
         titleBox.add(subtitle);
         topBar.add(titleBox, BorderLayout.WEST);
 
+        // Side Panel.
         JPanel sidePanel = new JPanel();
         sidePanel.setPreferredSize(new Dimension(250, 700));
         sidePanel.setBackground(Color.WHITE);
         sidePanel.setBorder(new EmptyBorder(20, 18, 20, 18));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
+        // Buttons.
         JButton guardToggleButton = styledButton("Toggle Guards");
         JButton witnessToggleButton = styledButton("Toggle Witnesses");
         JButton visibilityButton = styledButton("Toggle Visibility Lines");
@@ -46,6 +58,7 @@ public class GuardingGUI extends JFrame {
         JButton saveButton = styledButton("Save Polygon");
         JButton loadButton = styledButton("Load Polygon");
 
+        // Epsilon slider and label.
         JLabel epsilonLabel = new JLabel("ε = 0.20");
         epsilonLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         epsilonLabel.setForeground(new Color(45, 55, 75));
@@ -55,6 +68,7 @@ public class GuardingGUI extends JFrame {
         epsilonSlider.setPaintTicks(true);
         epsilonSlider.setBackground(Color.WHITE);
 
+        // Stats labels.
         JLabel guardCount = new JLabel("Guards: 0");
         JLabel witnessCount = new JLabel("Witness lower bound: 0");
         JLabel vertexCount = new JLabel("Vertices: 0");
@@ -63,6 +77,7 @@ public class GuardingGUI extends JFrame {
         witnessCount.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         vertexCount.setFont(new Font("Segoe UI", Font.PLAIN, 15));
 
+        // Button actions.
         guardToggleButton.addActionListener(e -> {
             drawingPanel.toggleGuards();
             guardCount.setText("Guards: " + drawingPanel.getGuardCount());
@@ -99,8 +114,10 @@ public class GuardingGUI extends JFrame {
             witnessCount.setText("Witness lower bound: 0");
         });
 
+        // Update vertex count when polygon changes.
         drawingPanel.setVertexCountListener(count -> vertexCount.setText("Vertices: " + count));
 
+        // Add components to side panel.
         sidePanel.add(sectionLabel("Controls"));
         sidePanel.add(Box.createVerticalStrut(10));
         sidePanel.add(guardToggleButton);
@@ -132,6 +149,7 @@ public class GuardingGUI extends JFrame {
 
         sidePanel.add(Box.createVerticalGlue());
 
+        // Help text at bottom.
         JLabel help = new JLabel(
                 "<html><b>How to use:</b><br>" +
                 "Click vertices in boundary order.<br><br>" +
@@ -144,11 +162,13 @@ public class GuardingGUI extends JFrame {
         help.setForeground(new Color(100, 105, 120));
         sidePanel.add(help);
 
+        // Add components to window.
         add(topBar, BorderLayout.NORTH);
         add(drawingPanel, BorderLayout.CENTER);
         add(sidePanel, BorderLayout.EAST);
     }
 
+    // Helper method to create styled buttons.
     private JButton styledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -168,6 +188,7 @@ public class GuardingGUI extends JFrame {
         return button;
     }
 
+    // Helper method to create section labels.
     private JLabel sectionLabel(String text) {
         JLabel label = new JLabel(text.toUpperCase());
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -176,6 +197,7 @@ public class GuardingGUI extends JFrame {
         return label;
     }
 
+    // Main method to launch the GUI.
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GuardingGUI gui = new GuardingGUI();
@@ -184,22 +206,30 @@ public class GuardingGUI extends JFrame {
     }
 }
 
+// Panel for drawing the polygon, guards, witnesses and visibility lines.
 class DrawingPanel extends JPanel {
+    // List of vertices in the polygon.
     private final List<Point> points = new ArrayList<>();
     private Set<Integer> guards = new LinkedHashSet<>();
     private Set<Integer> witnesses = new LinkedHashSet<>();
 
+    // Epsilon value for robust visibility.
     private double epsilon = 0.2;
 
+    // Toggles.
     private boolean showVisibilityLines = false;
     private boolean showGuards = false;
     private boolean showWitnesses = false;
 
+    // Listener to notify when vertex count changes.
     private VertexCountListener vertexCountListener;
 
+    // Constructor.
     public DrawingPanel() {
+        // Set background color.
         setBackground(new Color(248, 250, 252));
 
+        // Mouse click behavior.
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -216,6 +246,7 @@ class DrawingPanel extends JPanel {
         });
     }
 
+    // Main drawing method.
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -233,6 +264,7 @@ class DrawingPanel extends JPanel {
         drawVertices(g2);
     }
 
+    // Grid background.
     private void drawGrid(Graphics2D g2) {
         g2.setColor(new Color(230, 235, 242));
 
@@ -245,6 +277,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Draw the polygon edges and fill.
     private void drawPolygon(Graphics2D g2) {
         if (points.size() < 2) return;
 
@@ -277,6 +310,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Visibility lines.
     private void drawVisibilityLines(Graphics2D g2) {
         if (points.size() < 3) return;
 
@@ -296,6 +330,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Draw vertices, guards and witnesses.
     private void drawVertices(Graphics2D g2) {
         for (int i = 0; i < points.size(); i++) {
             Point p = points.get(i);
@@ -326,6 +361,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Compute guards and witnesses if not already computed.
     private void computeIfNeeded() {
         if (points.size() < 3) {
             return;
@@ -342,6 +378,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Clear everything.
     public void clear() {
         points.clear();
         guards.clear();
@@ -349,6 +386,7 @@ class DrawingPanel extends JPanel {
         repaint();
     }
 
+    // Update epsilon.
     public void setEpsilon(double epsilon) {
         this.epsilon = epsilon;
         guards.clear();
@@ -358,6 +396,7 @@ class DrawingPanel extends JPanel {
         repaint();
     }
 
+    // Getters for GUI.
     public int getGuardCount() {
         return guards.size();
     }
@@ -370,15 +409,18 @@ class DrawingPanel extends JPanel {
         return points.size();
     }
 
+    // Set listener for vertex count changes.
     public void setVertexCountListener(VertexCountListener listener) {
         this.vertexCountListener = listener;
     }
 
+    // Toggle visibility lines.
     public void toggleVisibilityLines() {
         showVisibilityLines = !showVisibilityLines;
         repaint();
     }
 
+    // Toggle guards.
     public void toggleGuards() {
         if (points.size() < 3) {
             JOptionPane.showMessageDialog(this, "Please add at least 3 vertices.");
@@ -390,6 +432,7 @@ class DrawingPanel extends JPanel {
         repaint();
     }
 
+    // Toggle witnesses.
     public void toggleWitnesses() {
         if (points.size() < 3) {
             JOptionPane.showMessageDialog(this, "Please add at least 3 vertices.");
@@ -401,6 +444,7 @@ class DrawingPanel extends JPanel {
         repaint();
     }
 
+    // Save polygon to file.
     public void savePolygonToFile() {
         if (points.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No polygon to save.");
@@ -427,6 +471,7 @@ class DrawingPanel extends JPanel {
         }
     }
 
+    // Load polygon from file.
     public void loadPolygonFromFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Load Polygon");
@@ -483,6 +528,7 @@ class DrawingPanel extends JPanel {
     }
 }
 
+// Listener interface for vertex count changes.
 interface VertexCountListener {
     void onVertexCountChanged(int count);
 }

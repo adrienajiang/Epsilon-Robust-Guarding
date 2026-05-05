@@ -52,7 +52,7 @@ public class GuardSolver {
                 break;
             }
 
-            // Add the chosen guard to the set of guards.
+            // Add the chosen guard to the set of guards. 
             guards.add(bestGuard);
 
             // Remove all vertices that this guard can see from the uncovered set.

@@ -59,11 +59,11 @@ public class GuardingGUI extends JFrame {
         JButton loadButton = styledButton("Load Polygon");
 
         // Epsilon slider and label.
-        JLabel epsilonLabel = new JLabel("ε = 0.20");
+        JLabel epsilonLabel = new JLabel("ε = 0.00");
         epsilonLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         epsilonLabel.setForeground(new Color(45, 55, 75));
 
-        JSlider epsilonSlider = new JSlider(0, 100, 20);
+        JSlider epsilonSlider = new JSlider(0, 100, 0);
         epsilonSlider.setMajorTickSpacing(25);
         epsilonSlider.setPaintTicks(true);
         epsilonSlider.setBackground(Color.WHITE);
@@ -107,9 +107,9 @@ public class GuardingGUI extends JFrame {
         });
 
         epsilonSlider.addChangeListener(e -> {
-            double epsilon = epsilonSlider.getValue() / 100.0;
+            double epsilon = epsilonSlider.getValue();
             drawingPanel.setEpsilon(epsilon);
-            epsilonLabel.setText(String.format("ε = %.2f", epsilon));
+            epsilonLabel.setText(String.format("ε = %.1f", epsilon));
             guardCount.setText("Guards: 0");
             witnessCount.setText("Witness lower bound: 0");
         });
@@ -214,7 +214,7 @@ class DrawingPanel extends JPanel {
     private Set<Integer> witnesses = new LinkedHashSet<>();
 
     // Epsilon value for robust visibility.
-    private double epsilon = 0.2;
+    private double epsilon = 0.0;
 
     // Toggles.
     private boolean showVisibilityLines = false;

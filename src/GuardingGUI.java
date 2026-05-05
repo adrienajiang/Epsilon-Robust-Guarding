@@ -285,7 +285,7 @@ class DrawingPanel extends JPanel {
 
         for (int i = 0; i < points.size(); i++) {
             for (int j = i + 1; j < points.size(); j++) {
-                if (VisibilityChecker.epsilonRobustCanSee(polygon, i, j, epsilon)) {
+                if (VisibilityChecker.epsilonRobustVisibility(polygon, i, j, epsilon)) {
                     Point a = points.get(i);
                     Point b = points.get(j);
 

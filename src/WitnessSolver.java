@@ -13,8 +13,8 @@ public class WitnessSolver {
 
                 // If the two witness vertices can see each other,
                 // then one of them can guard both, so they are NOT independent.
-                if (VisibilityChecker.epsilonRobustCanSee(polygon, candidate, existingWitness, epsilon) ||
-                    VisibilityChecker.epsilonRobustCanSee(polygon, existingWitness, candidate, epsilon)) {
+                if (VisibilityChecker.epsilonRobustVisibility(polygon, candidate, existingWitness, epsilon) ||
+                    VisibilityChecker.epsilonRobustVisibility(polygon, existingWitness, candidate, epsilon)) {
                     independent = false;
                     break;
                 }
@@ -45,8 +45,8 @@ public class WitnessSolver {
         int n = polygon.size();
 
         for (int guard = 0; guard < n; guard++) {
-            boolean seesA = VisibilityChecker.epsilonRobustCanSee(polygon, guard, witnessA, epsilon);
-            boolean seesB = VisibilityChecker.epsilonRobustCanSee(polygon, guard, witnessB, epsilon);
+            boolean seesA = VisibilityChecker.epsilonRobustVisibility(polygon, guard, witnessA, epsilon);
+            boolean seesB = VisibilityChecker.epsilonRobustVisibility(polygon, guard, witnessB, epsilon);
 
             if (seesA && seesB) {
                 return true;

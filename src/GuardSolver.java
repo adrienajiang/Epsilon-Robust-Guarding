@@ -20,7 +20,7 @@ public class GuardSolver {
                 int coverage = 0;
 
                 for (int vertex : uncovered) {
-                    if (VisibilityChecker.epsilonRobustCanSee(polygon, candidate, vertex, epsilon)) {
+                    if (VisibilityChecker.epsilonRobustVisibility(polygon, candidate, vertex, epsilon)) {
                         coverage++;
                     }
                 }
@@ -41,7 +41,7 @@ public class GuardSolver {
             while (iterator.hasNext()) {
                 int vertex = iterator.next();
 
-                if (VisibilityChecker.epsilonRobustCanSee(polygon, bestGuard, vertex, epsilon)) {
+                if (VisibilityChecker.epsilonRobustVisibility(polygon, bestGuard, vertex, epsilon)) {
                     iterator.remove();
                 }
             }

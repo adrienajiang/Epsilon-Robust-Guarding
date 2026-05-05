@@ -48,7 +48,7 @@ public class GuardSolver {
             }
 
             // If no guard can see any uncovered vertex, break out of the loop.
-            if (bestGuard == -1) {
+            if (bestGuard == -1 || bestCoverage == 0) {
                 break;
             }
 
@@ -69,8 +69,54 @@ public class GuardSolver {
                 }
             }
         }
+        
+        // Remove guards that are not needed after greedy solution.
+        removeRedundantGuards(polygon, epsilon, guards);
 
         // Return final set of guards.
         return guards;
+    }
+
+    // Post processing step.
+    // Remove a guard if all vertices are still covered without it.
+    private static void removeRedundantGuards(Polygon polygon, double epsilon, Set<Integer> guards) {
+        // Copy to safely iterate while modifying guards.
+        List<Integer> guardList = new ArrayList<>(guards);
+
+        // Removing each guard one at a time.
+        for (int guard : guardList) {
+            guards.remove(guard);
+
+            // If removing guard makes vertex uncovered, add it back.
+            if (!allVerticesCovered(polygon, epsilon, guards)) {
+                guards.add(guard);
+            }
+        }
+    }
+
+    // Check every vertex is covered by at least one guard.
+    private static boolean allVerticesCovered(Polygon polygon, double epsilon, Set<Integer> guards) {
+        int n = polygon.size();
+
+        // Check every vertex in the polygon.
+        for (int vertex = 0; vertex < n; vertex++) {
+            boolean covered = false;
+
+            // A vertex is covered if any guard can epsilon robustly see it.
+            for (int guard : guards) {
+                if (VisibilityChecker.epsilonRobustVisibility(polygon, guard, vertex, epsilon)) {
+                    covered = true;
+                    break;
+                }
+            }
+
+            // If no guard covers this vertex, the guard set is invalid.
+            if (!covered) {
+                return false;
+            }
+        }
+
+        // Every vertex was covered.
+        return true;
     }
 }
